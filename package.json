@@ -1,0 +1,24 @@
+{
+  "name": "automacao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open --e2e",
+    "cypress:run": "cypress run --e2e",
+    "test": "cypress run --e2e",
+    "test:regressivo": "cypress run --e2e --env tags=@regressivo",
+    "test:smoke": "cypress run --e2e --env tags=@smoke",
+    "open:regressivo": "cypress open --e2e --env tags=@regressivo"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
+    "cypress": "^15.21.1",
+    "esbuild": "^0.28.2"
+  }
+}

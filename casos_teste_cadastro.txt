@@ -1,0 +1,146 @@
+# Casos de teste manuais regressivos — Tela de Cadastro (Seu Barriga)
+# URL base configurada em cypress.config.js (baseUrl)
+# Quantidade: 17 cenários | Linguagem: Gherkin | Execução: manual / regressiva
+# Observação: cada cenário é independente e deve ser executado a partir da tela de cadastro.
+
+#language: pt
+
+@regressivo @manual @cadastro
+Funcionalidade: Cadastro de novo usuário
+  Como um visitante do Seu Barriga
+  Quero me cadastrar informando nome, e-mail e senha
+  Para acessar a aplicação com uma conta própria
+
+  Contexto:
+    Dado que o usuário acessa a tela de cadastro
+
+  @CT01 @positivo @smoke
+  Cenário: Exibir os elementos da tela de cadastro
+    Então o título da página deve ser "Seu Barriga - Novo Usuário"
+    E o menu deve exibir os links "Seu Barriga", "Login" e "Novo usuário?"
+    E a aba "Novo usuário?" deve estar destacada como ativa
+    E o formulário deve exibir os campos "Nome", "Email" e "Senha"
+    E o botão "Cadastrar" deve estar visível e habilitado
+
+  @CT02 @positivo @smoke
+  Cenário: Cadastrar usuário com dados válidos
+    Quando o usuário preenche o campo "Nome" com "Maria Silva"
+    E preenche o campo "Email" com um endereço ainda não cadastrado
+    E preenche o campo "Senha" com "Senha123"
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Usuário inserido com sucesso"
+
+  @CT03 @negativo @obrigatoriedade
+  Cenário: Tentar cadastrar com todos os campos vazios
+    Quando o usuário deixa os campos "Nome", "Email" e "Senha" em branco
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Nome é um campo obrigatório"
+    E deve exibir a mensagem "Email é um campo obrigatório"
+    E deve exibir a mensagem "Senha é um campo obrigatório"
+    E o cadastro não deve ser concluído
+
+  @CT04 @negativo @obrigatoriedade
+  Cenário: Tentar cadastrar sem preencher o Nome
+    Quando o usuário deixa o campo "Nome" em branco
+    E preenche o campo "Email" com um endereço válido ainda não cadastrado
+    E preenche o campo "Senha" com "Senha123"
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Nome é um campo obrigatório"
+    E o cadastro não deve ser concluído
+
+  @CT05 @negativo @obrigatoriedade
+  Cenário: Tentar cadastrar sem preencher o Email
+    Quando o usuário preenche o campo "Nome" com "Maria Silva"
+    E deixa o campo "Email" em branco
+    E preenche o campo "Senha" com "Senha123"
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Email é um campo obrigatório"
+    E o cadastro não deve ser concluído
+
+  @CT06 @negativo @obrigatoriedade
+  Cenário: Tentar cadastrar sem preencher a Senha
+    Quando o usuário preenche o campo "Nome" com "Maria Silva"
+    E preenche o campo "Email" com um endereço válido ainda não cadastrado
+    E deixa o campo "Senha" em branco
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Senha é um campo obrigatório"
+    E o cadastro não deve ser concluído
+
+  @CT07 @negativo @duplicidade
+  Cenário: Tentar cadastrar com e-mail já utilizado
+    Dado que já existe um usuário cadastrado com o e-mail "usuario.existente@teste.com"
+    Quando o usuário preenche o campo "Nome" com "Outro Nome"
+    E preenche o campo "Email" com "usuario.existente@teste.com"
+    E preenche o campo "Senha" com "Senha123"
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Endereço de email já utilizado"
+    E o cadastro não deve ser concluído
+
+  @CT08 @negativo @formato
+  Cenário: Tentar cadastrar com e-mail em formato inválido
+    Quando o usuário preenche o campo "Nome" com "Maria Silva"
+    E preenche o campo "Email" com "emailinvalido"
+    E preenche o campo "Senha" com "Senha123"
+    E aciona o botão "Cadastrar"
+    Então o cadastro não deve ser concluído
+    E o sistema deve impedir o envio por formato de e-mail inválido
+
+  @CT09 @positivo @seguranca
+  Cenário: Mascarar o valor digitado no campo Senha
+    Quando o usuário preenche o campo "Senha" com "Senha123"
+    Então os caracteres digitados devem ser exibidos de forma mascarada
+    E o valor em texto puro não deve ficar visível na tela
+
+  @CT10 @positivo @navegacao
+  Cenário: Acessar a tela de login pelo menu
+    Quando o usuário aciona o link "Login"
+    Então o sistema deve redirecionar para a rota "/login"
+    E a tela de login deve ser exibida
+
+  @CT11 @positivo @navegacao
+  Cenário: Acessar a página inicial pelo link Seu Barriga
+    Quando o usuário aciona o link "Seu Barriga"
+    Então o sistema deve redirecionar para a rota "/login"
+
+  @CT12 @positivo @ui
+  Cenário: Exibir placeholders dos campos do formulário
+    Então o campo "Nome" deve exibir o placeholder "Nome"
+    E o campo "Email" deve exibir o placeholder "Email"
+    E o campo "Senha" deve exibir o placeholder "Password"
+
+  @CT13 @positivo @ui
+  Cenário: Manter a aba Novo usuário destacada na tela de cadastro
+    Então o item de menu "Novo usuário?" deve permanecer visível
+    E deve estar destacado como a opção ativa da navegação
+    E o usuário deve permanecer na rota "/cadastro"
+
+  @CT14 @positivo
+  Cenário: Cadastrar usuário com nome contendo acentos e espaços
+    Quando o usuário preenche o campo "Nome" com "José da Conceição"
+    E preenche o campo "Email" com um endereço ainda não cadastrado
+    E preenche o campo "Senha" com "Senha123"
+    E aciona o botão "Cadastrar"
+    Então o sistema deve exibir a mensagem "Usuário inserido com sucesso"
+
+  @CT15 @positivo @integracao
+  Cenário: Autenticar com o usuário recém-cadastrado
+    Dado que o usuário concluiu um cadastro válido com e-mail e senha conhecidos
+    Quando o usuário acessa a tela de login
+    E informa o mesmo e-mail e a mesma senha utilizados no cadastro
+    E aciona o botão de entrar
+    Então o acesso deve ser concedido
+    E a área logada da aplicação deve ser exibida
+
+  @CT16 @negativo @ui
+  Cenário: Manter o formulário visível após erro de validação
+    Quando o usuário deixa os campos "Nome", "Email" e "Senha" em branco
+    E aciona o botão "Cadastrar"
+    Então as mensagens de campo obrigatório devem ser exibidas
+    E os campos "Nome", "Email" e "Senha" devem permanecer visíveis
+    E o botão "Cadastrar" deve permanecer disponível para nova tentativa
+
+  @CT17 @positivo @ui
+  Cenário: Conferir rótulos do campo de senha
+    Então o rótulo do campo deve ser "Senha"
+    E o placeholder do mesmo campo deve ser "Password"
+    E o botão de envio deve estar rotulado como "Cadastrar"

@@ -1,0 +1,7 @@
+{
+  "filterSpecs": true,
+  "omitFiltered": true,
+  "stepDefinitions": [
+    "cypress/support/step_definitions/**/*.js"
+  ]
+}

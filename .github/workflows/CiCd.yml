@@ -1,0 +1,59 @@
+name: CiCd
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: Tag Cucumber para executar
+        required: true
+        default: '@regressivo'
+        type: choice
+        options:
+          - '@regressivo'
+          - '@smoke'
+          - '@positivo'
+          - '@negativo'
+          - '@obrigatoriedade'
+          - '@navegacao'
+          - '@ui'
+          - '@seguranca'
+          - '@duplicidade'
+          - '@formato'
+          - '@integracao'
+          - '@cadastro'
+      tags_custom:
+        description: Expressao customizada opcional (ex. @CT07 ou @regressivo and not @integracao). Se preenchida, substitui a tag acima.
+        required: false
+        type: string
+
+jobs:
+  testes-cypress:
+    name: Cypress ${{ github.event.inputs.tags_custom || github.event.inputs.tags || '@regressivo' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TAGS: ${{ github.event.inputs.tags_custom || github.event.inputs.tags || '@regressivo' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar dependencias e executar Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          command: npx cypress run --e2e --env tags="${{ env.TAGS }}"
+
+      - name: Publicar evidencias em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-evidencias
+          path: |
+            cypress/screenshots
+            cypress/videos
+          if-no-files-found: ignore
